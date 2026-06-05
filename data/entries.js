@@ -17,5 +17,13 @@
      summary  one short sentence shown on the card
    ============================================================ */
 window.ENTRIES = [
-  // Your entries will appear here, newest first.
+  {
+    id: "2026-06-06-claude-code-hooks",
+    file: "entries/2026-06-06-claude-code-hooks.html",
+    title: "Wiring Up Claude Code Stop Hooks",
+    date: "2026-06-06",
+    category: "Dev Tools",
+    emoji: "🔔",
+    summary: "Why 'just remember this' doesn't work for automation — and how Stop hooks + PowerShell bridge WSL2 to Windows notifications."
+  }
 ];

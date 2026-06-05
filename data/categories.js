@@ -13,5 +13,5 @@
    in data/entries.js.
    ============================================================ */
 window.CATEGORIES = [
-  // No categories yet. Ask Claude to add some.
+  { name: "Dev Tools", color: "#8aa6ff" }
 ];

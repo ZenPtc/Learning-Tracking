@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wiring Up Claude Code Stop Hooks — Learning Journal</title>
+  <link rel="stylesheet" href="../assets/entry.css" />
+  <style>
+    .flow {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0; margin: 24px auto; max-width: 280px;
+    }
+    .flow-node {
+      background: var(--soft); border: 2px solid #e2dbf3; border-radius: 14px;
+      padding: 14px 18px; text-align: center; width: 100%;
+      font-weight: 700; font-size: 14px;
+    }
+    .flow-node .icon { font-size: 28px; display: block; margin-bottom: 6px; }
+    .flow-node .label { color: var(--ink-soft); font-size: 12px; margin-top: 4px; font-weight: 600; }
+    .flow-arrow {
+      font-size: 22px; color: var(--accent2); padding: 6px 0;
+      font-weight: 900; line-height: 1;
+    }
+
+    .compare { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; }
+    .compare th { background: var(--soft); padding: 10px 14px; text-align: left; font-size: 13px; font-weight: 800; }
+    .compare td { padding: 10px 14px; border-top: 1px solid #ede8f8; font-size: 14px; }
+    .compare tr:hover td { background: #faf8ff; }
+    .yes { color: #4cd4a0; font-weight: 800; }
+    .no  { color: #ffb86b; font-weight: 800; }
+
+    .steps { margin: 18px 0; }
+    .step { display: flex; gap: 16px; margin-bottom: 20px; }
+    .step-num {
+      flex-shrink: 0; width: 36px; height: 36px;
+      background: var(--accent2); color: #fff;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 15px;
+    }
+    .step-body { padding-top: 6px; }
+    .step-body strong { display: block; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+  <div class="entry">
+    <div class="topbar">
+      <a class="back" href="../index.html">← Back</a>
+      <div class="meta">
+        <span class="entry-badge" style="background:#8aa6ff">Dev Tools</span>
+        <span class="entry-date">2026-06-06</span>
+      </div>
+    </div>
+
+    <div class="entry-head">
+      <div class="big-emoji">🔔</div>
+      <h1>Wiring Up Claude Code Stop Hooks</h1>
+      <p class="lede">How event hooks do.</p>
+    </div>
+
+    <div class="entry-body">
+
+      <h2>Stop Hooks</h2>
+      <p>I wanted Claude Code to send me a notification the moment it finished responding.<br>
+      The answer was that I needed a <strong>reaction to an event</strong>.</p>
+      <p>Claude Code has a <em>hooks</em> system: you register a shell command against an event name, and the harness runs it for you automatically. The event for "I just finished responding" is called <code>Stop</code>.</p>
+
+      <h2>The WSL2 wrinkle</h2>
+      <p>Claude Code runs inside <strong>WSL2</strong> — a Linux VM on Windows. Linux's usual <code>notify-send</code> wasn't installed. Even if it were, it would show notifications inside the Linux layer, not on the Windows desktop where I actually sit.</p>
+      <p>The fix: WSL2 can call Windows binaries directly. <code>powershell.exe</code> is always on the path, so one PowerShell line can pop a real Windows toast notification from inside a bash script.</p>
+
+      <div class="callout tip">
+        <div class="callout-title">WSL2 trick</div>
+        From WSL2 you can run any <code>.exe</code> on your Windows PATH — including <code>powershell.exe</code>. This bridges the OS gap: a bash script that talks directly to Windows.
+      </div>
+
+      <h2>How it was built</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Test the notification command first</strong>
+            <p>Ran the PowerShell balloon-notification command directly in the terminal to confirm it actually popped a toast before wiring anything up (exit code 0 = success).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Save it as a small script</strong>
+            <p>Put the PowerShell invocation in <code>~/.claude/claude-done-notify.sh</code> instead of cramming it into JSON.</p>
+            <p>A <code>.sh</code> file is just a plain text file full of shell commands — the <code>.sh</code> extension is a convention that tells you "this is a shell script." By default Linux won't run it as a program, so <code>chmod +x</code> was needed: it grants the file <em>execute permission</em>, meaning the OS is now allowed to treat it as something you can run directly.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Register the Stop hook in global settings</strong>
+            <p>Edited <code>~/.claude/settings.json</code> — the <em>user-level</em> file so the hook applies to every project, not just one. The relevant part that was added looks like this:</p>
+            <pre style="margin-top:10px"><code>{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/claude-done-notify.sh",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+<div class="callout">
+        <div class="callout-title">Why async: true?</div>
+        The notification runs in the background. Claude's response is never held up waiting for the script to finish.
+      </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Validate the JSON</strong>
+            <p>Used Python (<code>python3 -c "import json, sys; json.load(sys.stdin)"</code>) to confirm the file is valid — since <code>jq</code> wasn't installed.</p>
+            <p>"Valid" here means the JSON is correctly formatted: every opening bracket has a closing bracket, every comma is in the right place, all quotes are closed. If even one character is wrong, the computer can't parse the file at all and Claude Code would silently ignore the entire settings file.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2>The event flow</h2>
+      <div class="flow">
+        <div class="flow-node">
+          <span class="icon">🤖</span>
+          Claude responds
+          <div class="label">Turn ends</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">
+          <span class="icon">⚡</span>
+          Stop event
+          <div class="label">Harness fires hook</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">
+          <span class="icon">📜</span>
+          Bash script
+          <div class="label">Calls powershell.exe</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">
+          <span class="icon">🔔</span>
+          Toast notification
+          <div class="label">Windows tray</div>
+        </div>
+      </div>
+
+      <h2>The one thing you can't verify mid-turn</h2>
+      <p>The <code>Stop</code> hook fires <em>after</em> the turn ends — outside Claude's own execution. So the only live proof is the notification that appeared (or didn't) when the previous message finished. The tool is real; the test is live.</p>
+
+      <div class="callout warn">
+        <div class="callout-title">If it didn't fire</div>
+        Run <code>/hooks</code> in Claude Code to reload hook config without restarting, or close and reopen the app. New <code>settings.json</code> entries sometimes need a fresh session.
+      </div>
+
+    </div>
+
+    <footer class="entry-foot">2026-06-06 · Dev Tools</footer>
+  </div>
+</body>
+</html>
