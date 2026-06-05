@@ -1,0 +1,115 @@
+/* ============================================================
+   Learning Journal — shared entry-page styling
+   Linked from every file in /entries via ../assets/entry.css
+   Keeps all entries looking consistent. Each entry can still
+   add its own <style> for topic-specific visuals.
+   ============================================================ */
+
+:root {
+  --ink: #3a3550;
+  --ink-soft: #7d7795;
+  --accent: #ff8fb1;
+  --accent2: #8aa6ff;
+  --card: #ffffff;
+  --soft: #f5f2fc;
+  --radius: 18px;
+  --shadow: 0 14px 34px rgba(126, 119, 149, 0.16);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", "Nunito", system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  line-height: 1.7;
+  background:
+    radial-gradient(900px 500px at 0% -10%, #ffe9f3, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, #e9f0ff, transparent 55%),
+    #fbf9ff;
+  padding: 30px 20px 80px;
+}
+
+.entry { max-width: 760px; margin: 0 auto; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 26px; flex-wrap: wrap;
+}
+.back {
+  text-decoration: none; font-weight: 800; font-size: 14px;
+  color: var(--ink); background: #fff;
+  padding: 10px 16px; border-radius: 999px;
+  box-shadow: var(--shadow); transition: transform .15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.back:hover { transform: translateX(-3px); }
+.meta { display: flex; align-items: center; gap: 10px; }
+.entry-badge {
+  display: inline-block; padding: 6px 13px; border-radius: 999px;
+  font-size: 12px; font-weight: 800; color: #fff;
+  background: var(--accent2);
+}
+.entry-date { color: var(--ink-soft); font-size: 13px; font-weight: 600; }
+
+/* ---------- header ---------- */
+.entry-head {
+  background: var(--card); border-radius: var(--radius);
+  padding: 30px 34px; box-shadow: var(--shadow); margin-bottom: 24px;
+  border-top: 7px solid var(--accent);
+}
+.entry-head .big-emoji { font-size: 46px; }
+.entry-head h1 { font-size: clamp(28px, 5vw, 40px); margin: 8px 0 10px; letter-spacing: -.5px; }
+.entry-head .lede { color: var(--ink-soft); font-size: 17px; margin: 0; }
+
+/* ---------- body ---------- */
+.entry-body {
+  background: var(--card); border-radius: var(--radius);
+  padding: 30px 34px; box-shadow: var(--shadow);
+}
+.entry-body h2 { font-size: 22px; margin: 28px 0 10px; }
+.entry-body h2:first-child { margin-top: 0; }
+.entry-body h3 { font-size: 18px; margin: 22px 0 8px; }
+.entry-body p { margin: 0 0 14px; }
+.entry-body ul, .entry-body ol { margin: 0 0 14px; padding-left: 22px; }
+.entry-body li { margin-bottom: 7px; }
+.entry-body a { color: var(--accent2); }
+
+.entry-body code {
+  background: var(--soft); padding: 2px 7px; border-radius: 7px;
+  font-family: "Consolas", "Menlo", monospace; font-size: .92em;
+}
+.entry-body pre {
+  background: #2b2740; color: #f4f1ff; padding: 18px 20px;
+  border-radius: 14px; overflow: auto; line-height: 1.5;
+}
+.entry-body pre code { background: none; padding: 0; color: inherit; }
+
+/* callout boxes */
+.callout {
+  border-radius: 14px; padding: 16px 18px; margin: 18px 0;
+  background: var(--soft); border-left: 5px solid var(--accent2);
+}
+.callout.tip { border-left-color: #4cd4a0; background: #eafff5; }
+.callout.warn { border-left-color: #ffb86b; background: #fff6e9; }
+.callout .callout-title { font-weight: 800; margin-bottom: 4px; }
+
+/* a reusable interactive "playground" shell */
+.playground {
+  border: 2px dashed #e2dbf3; border-radius: 16px;
+  padding: 18px; margin: 20px 0; background: #fbf9ff;
+}
+.playground h4 { margin: 0 0 12px; font-size: 15px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .5px; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 16px; }
+.control { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink-soft); }
+.control select, .control input {
+  font-family: inherit; font-size: 14px; padding: 8px 10px;
+  border: 2px solid #e2dbf3; border-radius: 10px; background: #fff; color: var(--ink);
+}
+
+footer.entry-foot {
+  text-align: center; color: var(--ink-soft);
+  margin-top: 30px; font-size: 14px;
+}

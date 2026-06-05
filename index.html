@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Learning Journal</title>
+  <link rel="stylesheet" href="assets/dashboard.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Header -->
+    <header class="hero">
+      <h1><span class="wave">👋</span> My Learning Journal</h1>
+      <p id="motivation">Every entry is a little win. ✨</p>
+    </header>
+
+    <!-- Stats -->
+    <section class="stats">
+      <div class="stat streak">
+        <div class="emoji">🔥</div>
+        <div class="num" id="stat-streak">0</div>
+        <div class="label">Current Streak</div>
+      </div>
+      <div class="stat days">
+        <div class="emoji">📅</div>
+        <div class="num" id="stat-days">0</div>
+        <div class="label">Learning Days</div>
+      </div>
+      <div class="stat entries">
+        <div class="emoji">📚</div>
+        <div class="num" id="stat-entries">0</div>
+        <div class="label">Total Entries</div>
+      </div>
+    </section>
+
+    <!-- Category manager (collapsible) -->
+    <section class="panel" id="cat-panel">
+      <div class="collapse-toggle" id="cat-toggle">
+        <h2 style="margin:0">🎨 Categories</h2>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="panel-body" style="margin-top:14px">
+        <div class="breakdown" id="breakdown"></div>
+        <div id="cat-list" style="margin-top:14px"></div>
+        <p style="color:var(--ink-soft); font-size:13px; margin:14px 0 0">
+          Categories live in <code>data/categories.js</code>. Ask Claude to add, rename, or recolor them.
+        </p>
+      </div>
+    </section>
+
+    <!-- Entries -->
+    <section class="panel">
+      <h2>📖 Entries</h2>
+      <div class="toolbar">
+        <input type="text" class="search" id="search" placeholder="Search your learning…" />
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <footer class="note">Keep learning, keep growing! 🌷</footer>
+  </div>
+
+  <!-- data first, then logic -->
+  <script src="data/categories.js"></script>
+  <script src="data/entries.js"></script>
+  <script src="assets/dashboard.js"></script>
+</body>
+</html>
